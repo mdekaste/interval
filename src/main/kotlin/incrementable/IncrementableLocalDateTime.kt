@@ -8,4 +8,5 @@ object IncrementableLocalDateTime : Incrementable<LocalDateTime> {
 
     override val maxValue: LocalDateTime = LocalDateTime.MAX
     override val minValue: LocalDateTime = LocalDateTime.MIN
+
 }

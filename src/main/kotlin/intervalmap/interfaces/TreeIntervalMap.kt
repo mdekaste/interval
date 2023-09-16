@@ -10,7 +10,8 @@ import java.util.AbstractMap.SimpleEntry
 context(Incrementable<K>)
 private class TreeIntervalMap<K : Comparable<K>, V>(
     initialValue: V,
-    pairs: Array<out Pair<Interval<K>, V>> = emptyArray()
+    pairs: Array<out Pair<Interval<K>, V>> = emptyArray(),
+    onConflict: ((V, V) -> V)? = null
 ) : MutableIntervalMap<K, V> {
 
     private val _backingMap = TreeMap<K?, V>(nullsLast())
@@ -18,7 +19,10 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
     init {
         _backingMap[null] = initialValue
         for ((interval, value) in pairs) {
-            set(interval, value)
+            when(onConflict){
+                null -> set(interval, value)
+                else -> merge(interval){ onConflict(it, value) }
+            }
         }
     }
 
@@ -73,13 +77,72 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
     private fun submapSelection(interval: Interval<K>): NavigableMap<K?, V> = when (interval) {
         is Closed -> _backingMap.subMap(interval.from, true, interval.to, true)
         is LeftBound -> _backingMap.tailMap(interval.from, true)
-        is RightBound -> _backingMap.headMap(interval.from, true)
+        is RightBound -> _backingMap.headMap(interval.to, true)
         is Open -> _backingMap
     }
 
 
+    private data class Wrapper<V>(
+        val value : V
+    )
+
     override fun merge(interval: Interval<K>, merge: (V) -> V) {
-        TODO("Not yet implemented")
+        fun mergeStrategy(previous: Wrapper<V>? = null): V {
+            val iterator = submapSelection(interval).descendingMap().iterator()
+            var previousValue = previous
+            while (iterator.hasNext()) {
+                val currentEntry = iterator.next()
+                val currentValue = Wrapper(merge(currentEntry.value))
+                if (currentValue != previousValue) {
+                    currentEntry.setValue(currentValue.value)
+                } else {
+                    iterator.remove()
+                }
+                previousValue = currentValue
+            }
+            return previousValue!!.value
+        }
+        when (interval) {
+            is Closed -> {
+                val higherValue = _backingMap.higherEntry(interval.to).value
+                val mergedHigherValue = merge(_backingMap.ceilingEntry(interval.to).value)
+                val vanValue = _backingMap.ceilingEntry(interval.from).value
+
+                val previousValue = mergeStrategy(Wrapper(mergedHigherValue))
+
+                if (mergedHigherValue != higherValue) {
+                    _backingMap[interval.to] = mergedHigherValue
+                }
+                if (vanValue != previousValue) {
+                    _backingMap[interval.from] = vanValue
+                }
+            }
+
+            is RightBound -> {
+                val totBoundValue = _backingMap.higherEntry(interval.to).value
+                val mergedTotBoundValue = merge(_backingMap.ceilingEntry(interval.to).value)
+
+                mergeStrategy(Wrapper(mergedTotBoundValue))
+
+                if (totBoundValue != mergedTotBoundValue) {
+                    _backingMap[interval.to] = mergedTotBoundValue
+                }
+            }
+
+            is LeftBound -> {
+                val vanBoundValue = _backingMap.ceilingEntry(interval.from).value
+
+                val previousValue = mergeStrategy()
+
+                if (vanBoundValue != previousValue) {
+                    _backingMap[interval.from] = vanBoundValue
+                }
+            }
+
+            is Open -> {
+                mergeStrategy()
+            }
+        }
     }
 
     override fun firstEntry(): Map.Entry<Interval<K>, V> {
@@ -200,5 +263,42 @@ fun <K : Comparable<K>, V, T> Iterable<T>.associateByInterval(
             keySelector(value),
             valueTransform(value)
         )
+    }
+}
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> Iterable<V>.groupByInterval(
+    keySelector: (V) -> Interval<K>
+) : IntervalMap<K, List<V>> = TreeIntervalMap<K, List<V>>(emptyList()).apply {
+    this@groupByInterval.forEach { value ->
+        merge(keySelector(value)) { previous ->
+            previous + value
+        }
+    }
+}
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, T> Iterable<T>.groupByInterval(
+    keySelector: (T) -> Interval<K>,
+    valueTransform: (T) -> V,
+) : IntervalMap<K, List<V>> = TreeIntervalMap<K, List<V>>(emptyList()).apply {
+    this@groupByInterval.forEach { value ->
+        merge(keySelector(value)) { previous ->
+            previous + valueTransform(value)
+        }
+    }
+}
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V ,T> Iterable<T>.groupByInterval(
+    keySelector: (T) -> Interval<K>,
+    valueTransform: (T) -> V,
+    defaultValue: V,
+    onConflict: (V, V) -> V
+) : IntervalMap<K, V> = TreeIntervalMap(defaultValue).apply {
+    this@groupByInterval.forEach { value ->
+        merge(keySelector(value)) { previous ->
+            onConflict(previous, valueTransform(value))
+        }
     }
 }

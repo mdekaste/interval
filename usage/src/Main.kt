@@ -1,21 +1,13 @@
-import customImplementation.localDate.IncrementableLocalDate.associateByInterval
-import customImplementation.localDate.IncrementableLocalDate.until
-import java.time.LocalDate
+import customImplementation.double.IncrementableDouble.groupByInterval
+import customImplementation.double.IncrementableDouble.until
 
 fun main(){
-    val list = List(2){ it * 10 }
+    val list = List(1000){ it }
 
-    val map = list.associateByInterval(
-        keySelector = { LocalDate.now().let { date -> date.plusWeeks(it.toLong()) until date.plusWeeks(it.toLong() + 1L) } },
-        valueTransform = { it.toString() },
-        defaultValue = "nope"
+    val map = list.groupByInterval(
+        keySelector = { null until it.toDouble() },
+        valueTransform = { it.toDouble() },
+        defaultValue = 0.0,
+        onConflict = Double::plus
     )
-
-    println(map.firstEntry())
-    println(map.lastEntry())
-    map.entries.let(::println)
-
-    val test = map.toSortedMap(compareBy(nullsLast()){ it.to })
-
-    println(test)
 }
