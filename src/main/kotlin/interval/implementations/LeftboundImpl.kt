@@ -12,13 +12,13 @@ internal class LeftboundImpl<T>(
     override val to: T? = null
     override val toIncluding: T? = null
 
-    override fun overlap(other: RightBound<T>): Closed<T> = from until other.to
+    override fun intersect(other: RightBound<T>): Closed<T> = from until other.to
 
-    override fun overlap(other: LeftBound<T>): LeftBound<T> = LeftboundImpl(from = maxOf(from, other.from))
+    override fun intersect(other: LeftBound<T>): LeftBound<T> = LeftboundImpl(from = maxOf(from, other.from))
 
-    override fun overlap(other: Open<T>): LeftBound<T> = this
+    override fun intersect(other: Open<T>): LeftBound<T> = this
 
-    override fun overlap(other: Closed<T>): Closed<T> = maxOf(from, other.from) until other.to
+    override fun intersect(other: Closed<T>): Closed<T> = maxOf(from, other.from) until other.to
 
     override fun toString() = "LeftBoundImpl(from: $from)"
 

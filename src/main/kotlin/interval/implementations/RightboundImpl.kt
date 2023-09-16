@@ -11,10 +11,10 @@ internal class RightboundImpl<T>(
     override val from: T? = null
     override val after: T? = null
 
-    override fun overlap(other: RightBound<T>): RightBound<T> = RightboundImpl(to = minOf(to, other.to))
-    override fun overlap(other: LeftBound<T>): Closed<T> = other.from until to
-    override fun overlap(other: Open<T>): RightBound<T> = this
-    override fun overlap(other: Closed<T>) = other.from until minOf(to, other.to)
+    override fun intersect(other: RightBound<T>): RightBound<T> = RightboundImpl(to = minOf(to, other.to))
+    override fun intersect(other: LeftBound<T>): Closed<T> = other.from until to
+    override fun intersect(other: Open<T>): RightBound<T> = this
+    override fun intersect(other: Closed<T>) = other.from until minOf(to, other.to)
 
     override fun toString() = "RightBoundImpl(to: $to)"
 
