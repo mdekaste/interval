@@ -1,10 +1,10 @@
 package customImplementation.double
 
-import incrementable.Incrementable
+import customImplementation.Intervallable
 import kotlin.math.nextDown
 import kotlin.math.nextUp
 
-object IncrementableDouble : Incrementable<Double> {
+object IncrementableDouble : Intervallable<Double> {
     override fun Double.increment() = nextUp()
     override fun Double.decrement() = nextDown()
 

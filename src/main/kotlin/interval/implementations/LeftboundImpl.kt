@@ -19,6 +19,18 @@ internal class LeftboundImpl<T>(
     override fun overlap(other: Open<T>): LeftBound<T> = this
 
     override fun overlap(other: Closed<T>): Closed<T> = maxOf(from, other.from) until other.to
+
+    override fun toString() = "LeftBoundImpl(from: $from)"
+
+    override fun equals(other: Any?): Boolean {
+        if(this === other){
+            return true
+        }
+        if(other !is LeftboundImpl<*>){
+            return false
+        }
+        return from == other.from
+    }
 }
 
 context(Incrementable<T>)

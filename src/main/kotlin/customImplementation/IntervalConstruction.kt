@@ -6,6 +6,8 @@ import interval.implementations.afterUntil as afterUntilImpl
 import interval.implementations.afterUntilIncluding as afterUntilIncludingImpl
 import interval.implementations.until as untilImpl
 import interval.implementations.untilIncluding as untilIncludingImpl
+import interval.implementations.after as afterImpl
+import interval.implementations.from as fromImpl
 import interval.interfaces.Closed
 import interval.interfaces.LeftBound
 import interval.interfaces.Open
@@ -36,4 +38,8 @@ internal interface IntervalConstruction<T>: Incrementable<T> where T : Comparabl
     infix fun T?.untilIncluding(toIncluding: T?) = this untilIncludingImpl toIncluding
     infix fun T?.afterUntil(to: T?): Open<T> = this afterUntilImpl to
     infix fun T?.afterUntilIncluding(toIncluding: T?) = this afterUntilIncludingImpl toIncluding
+
+    fun after(after: T): LeftBound<T> = afterImpl(after)
+
+    fun from(from: T): LeftBound<T> = fromImpl(from)
 }

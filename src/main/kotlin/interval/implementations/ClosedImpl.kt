@@ -23,6 +23,16 @@ private class ClosedImpl<T : Comparable<T>>( // TODO data class when its allowed
     )
 
     override fun toString() = "ClosedImpl(from: $from, to: $to)"
+
+    override fun equals(other: Any?): Boolean {
+        if(this === other){
+            return true
+        }
+        if(other !is LeftboundImpl<*>){
+            return false
+        }
+        return from == other.from && to == other.to
+    }
 }
 
 context(Incrementable<T>)

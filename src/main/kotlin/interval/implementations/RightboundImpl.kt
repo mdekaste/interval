@@ -15,6 +15,18 @@ internal class RightboundImpl<T>(
     override fun overlap(other: LeftBound<T>): Closed<T> = other.from until to
     override fun overlap(other: Open<T>): RightBound<T> = this
     override fun overlap(other: Closed<T>) = other.from until minOf(to, other.to)
+
+    override fun toString() = "RightBoundImpl(to: $to)"
+
+    override fun equals(other: Any?): Boolean {
+        if(this === other){
+            return true
+        }
+        if(other !is LeftboundImpl<*>){
+            return false
+        }
+        return to == other.to
+    }
 }
 
 context(Incrementable<T>)

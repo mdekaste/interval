@@ -1,10 +1,10 @@
 package customImplementation.localDate
 
-import incrementable.Incrementable
+import customImplementation.Intervallable
 import java.time.LocalDate
 
 
-object IncrementableLocalDate : Incrementable<LocalDate> {
+object IncrementableLocalDate : Intervallable<LocalDate> {
     override fun LocalDate.increment(): LocalDate = plusDays(1)
     override fun LocalDate.decrement(): LocalDate = minusDays(1)
 
