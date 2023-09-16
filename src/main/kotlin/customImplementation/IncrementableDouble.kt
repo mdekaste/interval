@@ -1,6 +1,5 @@
 package customImplementation
 
-import customImplementation.Intervallable
 import kotlin.math.nextDown
 import kotlin.math.nextUp
 

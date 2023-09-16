@@ -9,4 +9,3 @@ interface RightBound<T : Comparable<T>> : Open<T> {
 
     override fun isEmpty(): Boolean = false
 }
-

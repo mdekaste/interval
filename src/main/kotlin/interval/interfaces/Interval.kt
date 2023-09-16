@@ -21,5 +21,4 @@ sealed interface Interval<T : Comparable<T>> {
     operator fun contains(value: T): Boolean
     operator fun contains(value: Interval<T>): Boolean
     fun isEmpty(): Boolean
-
 }

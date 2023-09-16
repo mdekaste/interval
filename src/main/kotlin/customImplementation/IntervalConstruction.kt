@@ -1,25 +1,23 @@
 package customImplementation
 
 import incrementable.Incrementable
-import interval.implementations.*
-import interval.implementations.afterUntil as afterUntilImpl
-import interval.implementations.afterUntilIncluding as afterUntilIncludingImpl
-import interval.implementations.until as untilImpl
-import interval.implementations.untilIncluding as untilIncludingImpl
-import interval.implementations.after as afterImpl
-import interval.implementations.from as fromImpl
-import interval.implementations.before as beforeImpl
-import interval.implementations.beforeIncluding as beforeIncludingImpl
 import interval.interfaces.Closed
 import interval.interfaces.LeftBound
 import interval.interfaces.Open
 import interval.interfaces.RightBound
-
+import interval.implementations.after as afterImpl
+import interval.implementations.afterUntil as afterUntilImpl
+import interval.implementations.afterUntilIncluding as afterUntilIncludingImpl
+import interval.implementations.before as beforeImpl
+import interval.implementations.beforeIncluding as beforeIncludingImpl
+import interval.implementations.from as fromImpl
+import interval.implementations.until as untilImpl
+import interval.implementations.untilIncluding as untilIncludingImpl
 
 /**
  * connects the functions that normally require a context to work in, to make a user able to define their own contexts as a static object
  */
-internal interface IntervalConstruction<T>: Incrementable<T> where T : Comparable<T>  {
+internal interface IntervalConstruction<T> : Incrementable<T> where T : Comparable<T> {
     infix fun T.until(to: T): Closed<T> = this untilImpl to
     infix fun T.untilIncluding(toIncluding: T): Closed<T> = this untilIncludingImpl toIncluding
     infix fun T.afterUntil(to: T): Closed<T> = this afterUntilImpl to

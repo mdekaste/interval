@@ -1,8 +1,6 @@
 package customImplementation
 
-import customImplementation.Intervallable
 import java.time.LocalDate
-
 
 object IncrementableLocalDate : Intervallable<LocalDate> {
     override fun LocalDate.increment(): LocalDate = plusDays(1)

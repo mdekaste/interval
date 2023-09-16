@@ -1,5 +1,6 @@
-package incrementable
+package customImplementation
 
+import incrementable.Incrementable
 import java.time.LocalDateTime
 
 object IncrementableLocalDateTime : Incrementable<LocalDateTime> {
@@ -8,5 +9,4 @@ object IncrementableLocalDateTime : Incrementable<LocalDateTime> {
 
     override val maxValue: LocalDateTime = LocalDateTime.MAX
     override val minValue: LocalDateTime = LocalDateTime.MIN
-
 }
