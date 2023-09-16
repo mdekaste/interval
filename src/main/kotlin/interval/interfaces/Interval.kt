@@ -7,15 +7,19 @@ sealed interface Interval<T : Comparable<T>> {
     val after: T?
     val toIncluding: T?
 
-    fun intersect(other: Interval<T>) = when (other) {
-        is Closed<T> -> intersect(other)
-        is LeftBound<T> -> intersect(other)
-        is RightBound<T> -> intersect(other)
-        is Open<T> -> intersect(other)
+    operator fun times(other: Interval<T>) = when (other) {
+        is Closed<T> -> times(other)
+        is LeftBound<T> -> times(other)
+        is RightBound<T> -> times(other)
+        is Open<T> -> times(other)
     }
 
-    fun intersect(other: Closed<T>): Interval<T>
-    fun intersect(other: Open<T>): Interval<T>
-    fun intersect(other: LeftBound<T>): Interval<T>
-    fun intersect(other: RightBound<T>): Interval<T>
+    operator fun times(other: Closed<T>): Interval<T>
+    operator fun times(other: Open<T>): Interval<T>
+    operator fun times(other: LeftBound<T>): Interval<T>
+    operator fun times(other: RightBound<T>): Interval<T>
+    operator fun contains(value: T): Boolean
+    operator fun contains(value: Interval<T>): Boolean
+    fun isEmpty(): Boolean
+
 }

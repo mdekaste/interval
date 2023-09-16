@@ -11,10 +11,10 @@ internal class RightboundImpl<T>(
     override val from: T? = null
     override val after: T? = null
 
-    override fun intersect(other: RightBound<T>): RightBound<T> = RightboundImpl(to = minOf(to, other.to))
-    override fun intersect(other: LeftBound<T>): Closed<T> = other.from until to
-    override fun intersect(other: Open<T>): RightBound<T> = this
-    override fun intersect(other: Closed<T>) = other.from until minOf(to, other.to)
+    override fun times(other: RightBound<T>): RightBound<T> = RightboundImpl(to = minOf(to, other.to))
+    override fun times(other: LeftBound<T>): Closed<T> = other.from until to
+    override fun times(other: Open<T>): RightBound<T> = this
+    override fun times(other: Closed<T>) = other.from until minOf(to, other.to)
 
     override fun toString() = "RightBoundImpl(to: $to)"
 
@@ -26,6 +26,10 @@ internal class RightboundImpl<T>(
             return false
         }
         return to == other.to
+    }
+
+    override fun hashCode(): Int {
+        return to.hashCode()
     }
 }
 

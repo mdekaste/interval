@@ -1,4 +1,4 @@
-package customImplementation.localDate
+package customImplementation
 
 import customImplementation.Intervallable
 import java.time.LocalDate

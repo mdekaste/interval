@@ -39,20 +39,30 @@
 //}
 
 sealed interface Range<T : Comparable<T>> {
-    interface All<T: Comparable<T>> : Range<T>, NoneClosed<T>, BothOpen<T>, FromToNull<T>
-    interface LessThan<T: Comparable<T>> : Range<T>, RightClosed<T>, LeftOpen<T>, ToNonNull<T>
-    interface AtLeast<T: Comparable<T>> : Range<T>, LeftClosed<T>, RightOpen<T>, FromNonNull<T>
-    interface Between<T: Comparable<T>> : Range<T>, BothClosed<T>, NoneOpen<T>, FromToNonNull<T>
+    interface All<T: Comparable<T>> : Range<T>, FromToNull<T>
+    interface LessThan<T: Comparable<T>> : Range<T>, ToNonNull<T>
+    interface AtLeast<T: Comparable<T>> : Range<T>, FromNonNull<T>
+    interface Between<T: Comparable<T>> : Range<T>, FromToNonNull<T>
 }
 
-data class AllImpl<T : Comparable<T>>(override val from: T? = null, override val to: T? = null): Range.All<T>
-data class LessThanImpl<T :Comparable<T>>(override val from: T? = null, override val to: T): Range.LessThan<T>
+data class AllImpl<T : Comparable<T>>(override val from: T? = null, override val to: T? = null): Range.All<T>, BothOpen<T>, NoneClosed<T>
+data class LessThanImpl<T :Comparable<T>>(override val from: T? = null, override val to: T): Range.LessThan<T>, LeftOpen<T>, RightClosed<T>
 
-data class AtLeastImpl<T : Comparable<T>>(override val to: T? = null, override val from: T) : Range.AtLeast<T>
+data class AtLeastImpl<T : Comparable<T>>(override val to: T? = null, override val from: T) : Range.AtLeast<T>, RightOpen<T>, LeftClosed<T>
 
-data class BetweenImpl<T : Comparable<T>>(override val to: T, override val from: T) : Range.Between<T>
+data class BetweenImpl<T : Comparable<T>>(override val to: T, override val from: T) : Range.Between<T>, NoneOpen<T>, BothClosed<T>
 
 fun main(){
     val range: Range<Int> = LessThanImpl(to = 4)
+
+    when(range){
+        is Range.All -> TODO()
+        is Range.AtLeast -> TODO()
+        is Range.Between -> TODO()
+        is Range.LessThan -> TODO()
+    }
+
 }
+
+typealias BothOpen<T> = Range.All<T>
 

@@ -11,13 +11,13 @@ private class ClosedImpl<T : Comparable<T>>( // TODO data class when its allowed
     override val after: T = from.decrement()
     override val toIncluding: T = to.increment()
 
-    override fun intersect(other: RightBound<T>): Closed<T> = ClosedImpl(from = from, to = minOf(to, other.to))
+    override fun times(other: RightBound<T>): Closed<T> = ClosedImpl(from = from, to = minOf(to, other.to))
 
-    override fun intersect(other: LeftBound<T>): Closed<T> = ClosedImpl(from = maxOf(from, other.from), to = to)
+    override fun times(other: LeftBound<T>): Closed<T> = ClosedImpl(from = maxOf(from, other.from), to = to)
 
-    override fun intersect(other: Open<T>): Closed<T> = this
+    override fun times(other: Open<T>): Closed<T> = this
 
-    override fun intersect(other: Closed<T>): Closed<T> = ClosedImpl(
+    override fun times(other: Closed<T>): Closed<T> = ClosedImpl(
         from = maxOf(from, other.from),
         to = minOf(to, other.to)
     )
@@ -32,6 +32,12 @@ private class ClosedImpl<T : Comparable<T>>( // TODO data class when its allowed
             return false
         }
         return from == other.from && to == other.to
+    }
+
+    override fun hashCode(): Int {
+        var result = from.hashCode()
+        result = 31 * result + to.hashCode()
+        return result
     }
 }
 

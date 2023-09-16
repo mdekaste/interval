@@ -9,7 +9,7 @@ import intervalmap.interfaces.associateByIntervalTo as associateByIntervalToImpl
 import intervalmap.interfaces.groupByInterval as groupByIntervalImpl
 import intervalmap.interfaces.groupByIntervalTo as groupByIntervalToImpl
 
-internal interface IntervalMapConstruction<K : Comparable<K>> : Incrementable<K> {
+interface IntervalMapConstruction<K : Comparable<K>> : Incrementable<K> {
     fun<V> intervalMapOf(defaultValue: V, vararg pairs: Pair<Interval<K>, V>) = intervalmap.interfaces.intervalMapOf(defaultValue, *pairs)
     fun<V> mutableIntervalMapOf(defaultValue: V, vararg pairs: Pair<Interval<K>, V>) = intervalmap.interfaces.mutableIntervalMapOf(defaultValue, *pairs)
     fun <V> Iterable<V>.associateByInterval(

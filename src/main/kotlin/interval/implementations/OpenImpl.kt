@@ -9,10 +9,10 @@ private object OpenImpl : Open<Nothing> {
     override val to: Nothing? = null
     override val toIncluding: Nothing? = null
 
-    override fun intersect(other: RightBound<Nothing>) = other
-    override fun intersect(other: LeftBound<Nothing>) = other
-    override fun intersect(other: Open<Nothing>) = other
-    override fun intersect(other: Closed<Nothing>) = other
+    override fun times(other: RightBound<Nothing>) = other
+    override fun times(other: LeftBound<Nothing>) = other
+    override fun times(other: Open<Nothing>) = other
+    override fun times(other: Closed<Nothing>) = other
 }
 
 fun <T : Comparable<T>> openInterval(): Open<T> = @Suppress("UNCHECKED_CAST") (OpenImpl as Open<T>)

@@ -1,6 +1,5 @@
 package intervalmap
 
-import customImplementation.localDate.IncrementableLocalDate.intervalMapOf
 import interval.interfaces.Interval
 import intervalmap.interfaces.IntervalMap
 import intervalmap.interfaces.MutableIntervalMap

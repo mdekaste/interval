@@ -1,4 +1,4 @@
-package customImplementation.double
+package customImplementation
 
 import customImplementation.Intervallable
 import kotlin.math.nextDown

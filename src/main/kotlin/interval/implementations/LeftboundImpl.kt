@@ -12,13 +12,13 @@ internal class LeftboundImpl<T>(
     override val to: T? = null
     override val toIncluding: T? = null
 
-    override fun intersect(other: RightBound<T>): Closed<T> = from until other.to
+    override fun times(other: RightBound<T>): Closed<T> = from until other.to
 
-    override fun intersect(other: LeftBound<T>): LeftBound<T> = LeftboundImpl(from = maxOf(from, other.from))
+    override fun times(other: LeftBound<T>): LeftBound<T> = LeftboundImpl(from = maxOf(from, other.from))
 
-    override fun intersect(other: Open<T>): LeftBound<T> = this
+    override fun times(other: Open<T>): LeftBound<T> = this
 
-    override fun intersect(other: Closed<T>): Closed<T> = maxOf(from, other.from) until other.to
+    override fun times(other: Closed<T>): Closed<T> = maxOf(from, other.from) until other.to
 
     override fun toString() = "LeftBoundImpl(from: $from)"
 
@@ -30,6 +30,10 @@ internal class LeftboundImpl<T>(
             return false
         }
         return from == other.from
+    }
+
+    override fun hashCode(): Int {
+        return from.hashCode()
     }
 }
 
