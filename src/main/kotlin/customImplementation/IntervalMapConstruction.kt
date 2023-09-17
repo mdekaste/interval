@@ -8,19 +8,25 @@ import intervalmap.interfaces.associateByInterval as associateByIntervalImpl
 import intervalmap.interfaces.associateByIntervalTo as associateByIntervalToImpl
 import intervalmap.interfaces.groupByInterval as groupByIntervalImpl
 import intervalmap.interfaces.groupByIntervalTo as groupByIntervalToImpl
+import intervalmap.interfaces.intervalMapOf as intervalMapOfImpl
+import intervalmap.interfaces.mutableIntervalMapOf as mutableIntervalMapOfImpl
+import intervalmap.interfaces.toMutableIntervalMap as toMutableIntervalMapImpl
 
 interface IntervalMapConstruction<K : Comparable<K>> : Incrementable<K> {
+    fun <V> intervalMapOf() = intervalMapOfImpl<K, V>()
     fun <V> intervalMapOf(defaultValue: V, vararg pairs: Pair<Interval<K>, V>) =
-        intervalmap.interfaces.intervalMapOf(defaultValue, *pairs)
+        intervalMapOfImpl(defaultValue, *pairs)
+
+    fun <V> mutableIntervalMapOf() = mutableIntervalMapOfImpl<K, V>()
 
     fun <V> mutableIntervalMapOf(defaultValue: V, vararg pairs: Pair<Interval<K>, V>) =
-        intervalmap.interfaces.mutableIntervalMapOf(defaultValue, *pairs)
+        mutableIntervalMapOfImpl(defaultValue, *pairs)
 
     fun <V> Iterable<V>.associateByInterval(
         keySelector: (V) -> Interval<K>,
     ): IntervalMap<K, V?> = associateByIntervalImpl(keySelector)
 
-    fun <V, M : MutableIntervalMap<K, V>> Iterable<V>.associateByIntervalTo(
+    fun <V, M : MutableIntervalMap<K, in V>> Iterable<V>.associateByIntervalTo(
         destination: M,
         keySelector: (V) -> Interval<K>,
     ): M = associateByIntervalToImpl(destination, keySelector)
@@ -75,4 +81,6 @@ interface IntervalMapConstruction<K : Comparable<K>> : Incrementable<K> {
         valueTransform: (T) -> V,
         onConflict: (V, V) -> V,
     ): M = groupByIntervalImpl(destination, keySelector, valueTransform, onConflict)
+
+    fun <V> IntervalMap<K, V>.toMutableIntervalMap() = toMutableIntervalMapImpl()
 }

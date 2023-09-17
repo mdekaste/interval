@@ -229,7 +229,7 @@ fun <K : Comparable<K>, V> Iterable<V>.associateByInterval(
 }
 
 context(Incrementable<K>)
-fun <K : Comparable<K>, V, M : MutableIntervalMap<K, V>> Iterable<V>.associateByIntervalTo(
+fun <K : Comparable<K>, V, M : MutableIntervalMap<K, in V>> Iterable<V>.associateByIntervalTo(
     destination: M,
     keySelector: (V) -> Interval<K>,
 ): M = destination.apply {
@@ -356,4 +356,14 @@ fun <K : Comparable<K>, V, T, M : MutableIntervalMap<K, V>> Iterable<T>.groupByI
             onConflict(previous, valueTransform(value))
         }
     }
+}
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> IntervalMap<K, V>.toMutableIntervalMap(): MutableIntervalMap<K, V> {
+    val entries = entries
+    val treeIntervalMap = TreeIntervalMap(entries.first().value)
+    for ((interval, value) in entries) {
+        treeIntervalMap[interval] = value
+    }
+    return treeIntervalMap
 }
