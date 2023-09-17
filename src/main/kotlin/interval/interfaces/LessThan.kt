@@ -1,6 +1,6 @@
 package interval.interfaces
 
-interface RightBound<T : Comparable<T>> : Open<T> {
+interface LessThan<T : Comparable<T>> : Left.Open<T>, Right.Closed<T> {
     override val to: T
     override val toIncluding: T
 

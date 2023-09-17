@@ -1,6 +1,8 @@
 package intervalmap.interfaces
 
 import incrementable.Incrementable
+import interval.implementations.before
+import interval.implementations.from
 import interval.implementations.until
 import interval.interfaces.*
 import java.util.*
@@ -26,58 +28,58 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
     }
 
     override fun set(interval: Interval<K>, value: V) = when (interval) {
-        is Closed<K> -> setClosed(interval, value)
-        is LeftBound<K> -> setLeftbound(interval, value)
-        is RightBound<K> -> setRightbound(interval, value)
-        is Open<K> -> setOpen(interval, value)
+        is Between<K> -> setClosed(interval, value)
+        is AtLeast<K> -> setLeftbound(interval, value)
+        is LessThan<K> -> setRightbound(interval, value)
+        is All<K> -> setOpen(interval, value)
     }
 
-    private fun setClosed(closed: Closed<K>, value: V) {
-        val fromBoundValue = _backingMap.ceilingEntry(closed.from).value
-        val untilBoundValue = _backingMap.higherEntry(closed.to).value
+    private fun setClosed(between: Between<K>, value: V) {
+        val fromBoundValue = _backingMap.ceilingEntry(between.from).value
+        val untilBoundValue = _backingMap.higherEntry(between.to).value
 
-        submapSelection(closed).clear()
+        submapSelection(between).clear()
 
         if (fromBoundValue != value) {
-            _backingMap[closed.from] = fromBoundValue
+            _backingMap[between.from] = fromBoundValue
         }
         if (untilBoundValue != value) {
-            _backingMap[closed.to] = value
+            _backingMap[between.to] = value
         }
     }
 
-    private fun setLeftbound(leftBound: LeftBound<K>, value: V) {
-        val fromBoundValue = _backingMap.ceilingEntry(leftBound.from).value
+    private fun setLeftbound(atLeast: AtLeast<K>, value: V) {
+        val fromBoundValue = _backingMap.ceilingEntry(atLeast.from).value
 
-        submapSelection(leftBound).clear()
+        submapSelection(atLeast).clear()
 
         if (fromBoundValue != value) {
-            _backingMap[leftBound.from] = fromBoundValue
+            _backingMap[atLeast.from] = fromBoundValue
         }
 
         _backingMap[null] = value
     }
 
-    private fun setRightbound(rightBound: RightBound<K>, value: V) {
-        val untilBoundValue = _backingMap.higherEntry(rightBound.to).value
+    private fun setRightbound(lessThan: LessThan<K>, value: V) {
+        val untilBoundValue = _backingMap.higherEntry(lessThan.to).value
 
-        submapSelection(rightBound).clear()
+        submapSelection(lessThan).clear()
 
         if (untilBoundValue != value) {
-            _backingMap[rightBound.to] = value
+            _backingMap[lessThan.to] = value
         }
     }
 
-    private fun setOpen(open: Open<K>, value: V) {
-        submapSelection(open).clear()
+    private fun setOpen(all: All<K>, value: V) {
+        submapSelection(all).clear()
         _backingMap[null] = value
     }
 
     private fun submapSelection(interval: Interval<K>): NavigableMap<K?, V> = when (interval) {
-        is Closed -> _backingMap.subMap(interval.from, true, interval.to, true)
-        is LeftBound -> _backingMap.tailMap(interval.from, true)
-        is RightBound -> _backingMap.headMap(interval.to, true)
-        is Open -> _backingMap
+        is Between -> _backingMap.subMap(interval.from, true, interval.to, true)
+        is AtLeast -> _backingMap.tailMap(interval.from, true)
+        is LessThan -> _backingMap.headMap(interval.to, true)
+        is All -> _backingMap
     }
 
     private data class Wrapper<V>(
@@ -101,7 +103,7 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
             return previousValue!!.value
         }
         when (interval) {
-            is Closed -> {
+            is Between -> {
                 val higherValue = _backingMap.higherEntry(interval.to).value
                 val mergedHigherValue = merge(_backingMap.ceilingEntry(interval.to).value)
                 val vanValue = _backingMap.ceilingEntry(interval.from).value
@@ -116,7 +118,7 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
                 }
             }
 
-            is RightBound -> {
+            is LessThan -> {
                 val totBoundValue = _backingMap.higherEntry(interval.to).value
                 val mergedTotBoundValue = merge(_backingMap.ceilingEntry(interval.to).value)
 
@@ -127,7 +129,7 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
                 }
             }
 
-            is LeftBound -> {
+            is AtLeast -> {
                 val vanBoundValue = _backingMap.ceilingEntry(interval.from).value
 
                 val previousValue = mergeStrategy()
@@ -137,22 +139,22 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
                 }
             }
 
-            is Open -> {
+            is All -> {
                 mergeStrategy()
             }
         }
     }
 
-    override fun firstEntry(): Map.Entry<Interval<K>, V> {
-        val from: K? = null
+    override fun firstEntry(): Map.Entry<Left.Open<K>, V> {
         val (until, value) = _backingMap.firstEntry()
-        return SimpleEntry(from until until, value)
+        val interval = before(until)
+        return SimpleEntry(interval, value)
     }
 
-    override fun lastEntry(): Map.Entry<Interval<K>, V> {
+    override fun lastEntry(): Map.Entry<Right.Open<K>, V> {
         val from: K? = _backingMap.lowerKey(null)
-        val (until, value) = _backingMap.lastEntry()
-        return SimpleEntry(from until until, value)
+        val (_, value) = _backingMap.lastEntry()
+        return SimpleEntry(from(from), value)
     }
 
     override fun getEntry(key: K): Map.Entry<Interval<K>, V> {
@@ -188,6 +190,14 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
     override fun isEmpty() = false
 
     override fun toString() = _backingMap.toString()
+}
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> buildIntervalMap(
+    initialValue: V,
+    builderAction: MutableIntervalMap<K, V>.() -> Unit
+): IntervalMap<K, V> {
+    return TreeIntervalMap(initialValue).apply(builderAction)
 }
 
 context(Incrementable<K>)
