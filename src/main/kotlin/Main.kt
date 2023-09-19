@@ -4,6 +4,7 @@ import customImplementation.IncrementableInt.associateByIntervalTo
 import customImplementation.IncrementableInt.before
 import customImplementation.IncrementableInt.beforeIncluding
 import customImplementation.IncrementableInt.from
+import customImplementation.IncrementableLocalDate.from
 import customImplementation.IncrementableInt.increment
 import customImplementation.IncrementableInt.mutableIntervalMapOf
 import customImplementation.IncrementableInt.toMutableIntervalMap
@@ -71,50 +72,73 @@ fun intervalMapsAreNeat() {
 
     // double the values between [3, 5)
     intervalMapC.merge(3 until 5) { it * 2 }
+
+    val date = LocalDate.now()
+
+    from(date)
 }
 
-fun exhaustiveCheckOnAllOptions(interval: Interval<LocalDate>) {
-    when (interval) {
-        is All -> println("this is an 'all' interval")
-        is AtLeast -> println("this is an 'atLeast' interval with from: ${interval.from}")
-        is LessThan -> println("this is a 'lessThan' interval with to: ${interval.to}")
-        is Between -> println("this is a 'between' interval with from: ${interval.from} and to: ${interval.to}")
+fun exhaustiveCheckOnAllOptions(interval: Interval<LocalDate>): String {
+    return when (interval) {
+        is All -> "this is an 'all' interval"
+        is AtLeast -> "this is an 'atLeast' interval with from: ${interval.from}"
+        is LessThan -> "this is a 'lessThan' interval with to: ${interval.to}"
+        is Between -> "this is a 'between' interval with from: ${interval.from} and to: ${interval.to}"
     }
 }
 
-fun exhaustiveCheckLeftRight(interval: Interval<LocalDate>) {
-    when (interval) {
+fun exhaustiveCheckLeft(interval: Interval<LocalDate>): String {
+    return when (interval) {
         is Left.Open -> "this interval doesn't have a 'from' value"
         is Left.Closed -> "but this one does: ${interval.from}"
     }
-    when (interval) {
+}
+
+fun exhaustiveCheckRight(interval: Interval<LocalDate>): String {
+    return when (interval) {
         is Right.Open -> "this interval doesn't doesn't have a 'to' value"
         is Right.Closed -> "but this one does: ${interval.to}"
     }
 }
 
-fun mixedCheck(interval: Interval<LocalDate>) {
-    when (interval) {
+
+fun mixedCheck(interval: Interval<LocalDate>): String {
+    return when (interval) {
         is Right.Closed -> "this interval has a to: ${interval.to} but no info about from"
         is AtLeast -> "this interval has a from: ${interval.from} but to is unknown"
         is All -> "this is the only option left"
     }
 }
 
-fun mixedCheck2(interval: Interval<LocalDate>) {
-    when (interval) {
+fun mixedCheck2(interval: Interval<LocalDate>): String {
+    return when (interval) {
         is Right.Closed -> "this interval has a to: ${interval.to} but no info about from"
         is AtLeast -> "this interval has a from: ${interval.from} but to is unknown"
         is Left.Open -> "also covered by Left.Open"
     }
 }
 
-fun exhaustiveCheckOnSubtype(rightIsOpen: Right.Open<Int>) {
-    when (rightIsOpen) {
+fun exhaustiveCheckOnSubtype(leftIsOpen: Left.Open<Int>) : String {
+    return when(leftIsOpen){
+        is LessThan -> "Now right is closed"
+        is All -> "Now both left and right are open"
+    }
+}
+
+fun exhaustiveCheckOnSubtype(rightIsOpen: Right.Open<Int>): String {
+    return when (rightIsOpen) {
         is AtLeast -> "Now Left is closed"
         is All -> "Now both Left and Right are open"
     }
 }
 
+fun rangeChecks(value: Int): String {
+    return when(value){
+        in before(30) -> "less than 30"
+        in 30 until 60 -> "between 30 and 60"
+        in after(60) -> "hoi"
+        else -> "compiler plugin needed"
+    }
+}
 
 
