@@ -4,17 +4,16 @@ import customImplementation.IncrementableInt.associateByIntervalTo
 import customImplementation.IncrementableInt.before
 import customImplementation.IncrementableInt.beforeIncluding
 import customImplementation.IncrementableInt.from
-import customImplementation.IncrementableLocalDate.from
 import customImplementation.IncrementableInt.increment
 import customImplementation.IncrementableInt.mutableIntervalMapOf
 import customImplementation.IncrementableInt.toMutableIntervalMap
 import customImplementation.IncrementableInt.until
+import customImplementation.IncrementableLocalDate.from
 import interval.interfaces.*
 import intervalmap.asNonNullValueIntervalMap
 import intervalmap.interfaces.IntervalMap
 import intervalmap.interfaces.MutableIntervalMap
 import java.time.LocalDate
-
 
 fun main() {
     intervalMapsAreNeat()
@@ -55,7 +54,7 @@ fun intervalMapsAreNeat() {
     // can also be done with by to
     list.associateByIntervalTo(mutableIntervalMapOf()) { it until it.increment() }
 
-    //replace null with another number
+    // replace null with another number
     intervalMapB.merge { previous ->
         when (previous) {
             null -> 0
@@ -63,7 +62,7 @@ fun intervalMapsAreNeat() {
         }
     }
 
-    //now we can check the value to be non null
+    // now we can check the value to be non null
     val intervalMapC: MutableIntervalMap<Int, Int> =
         intervalMapB.asNonNullValueIntervalMap() ?: error("this is not the case")
 
@@ -101,7 +100,6 @@ fun exhaustiveCheckRight(interval: Interval<LocalDate>): String {
     }
 }
 
-
 fun mixedCheck(interval: Interval<LocalDate>): String {
     return when (interval) {
         is Right.Closed -> "this interval has a to: ${interval.until} but no info about from"
@@ -118,8 +116,8 @@ fun mixedCheck2(interval: Interval<LocalDate>): String {
     }
 }
 
-fun exhaustiveCheckOnSubtype(leftIsOpen: Left.Open<Int>) : String {
-    return when(leftIsOpen){
+fun exhaustiveCheckOnSubtype(leftIsOpen: Left.Open<Int>): String {
+    return when (leftIsOpen) {
         is LessThan -> "Now right is closed"
         is All -> "Now both left and right are open"
     }
@@ -133,12 +131,10 @@ fun exhaustiveCheckOnSubtype(rightIsOpen: Right.Open<Int>): String {
 }
 
 fun rangeChecks(value: Int): String {
-    return when(value){
+    return when (value) {
         in before(30) -> "less than 30"
         in 30 until 60 -> "between 30 and 60"
         in after(60) -> "hoi"
         else -> "compiler plugin needed"
     }
 }
-
-
