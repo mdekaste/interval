@@ -36,7 +36,7 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
 
     private fun setClosed(between: Between<K>, value: V) {
         val fromBoundValue = _backingMap.ceilingEntry(between.from).value
-        val untilBoundValue = _backingMap.higherEntry(between.to).value
+        val untilBoundValue = _backingMap.higherEntry(between.until).value
 
         submapSelection(between).clear()
 
@@ -44,7 +44,7 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
             _backingMap[between.from] = fromBoundValue
         }
         if (untilBoundValue != value) {
-            _backingMap[between.to] = value
+            _backingMap[between.until] = value
         }
     }
 
@@ -61,12 +61,12 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
     }
 
     private fun setRightbound(lessThan: LessThan<K>, value: V) {
-        val untilBoundValue = _backingMap.higherEntry(lessThan.to).value
+        val untilBoundValue = _backingMap.higherEntry(lessThan.until).value
 
         submapSelection(lessThan).clear()
 
         if (untilBoundValue != value) {
-            _backingMap[lessThan.to] = value
+            _backingMap[lessThan.until] = value
         }
     }
 
@@ -76,9 +76,9 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
     }
 
     private fun submapSelection(interval: Interval<K>): NavigableMap<K?, V> = when (interval) {
-        is Between -> _backingMap.subMap(interval.from, true, interval.to, true)
+        is Between -> _backingMap.subMap(interval.from, true, interval.until, true)
         is AtLeast -> _backingMap.tailMap(interval.from, true)
-        is LessThan -> _backingMap.headMap(interval.to, true)
+        is LessThan -> _backingMap.headMap(interval.until, true)
         is All -> _backingMap
     }
 
@@ -104,14 +104,14 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
         }
         when (interval) {
             is Between -> {
-                val higherValue = _backingMap.higherEntry(interval.to).value
-                val mergedHigherValue = merge(_backingMap.ceilingEntry(interval.to).value)
+                val higherValue = _backingMap.higherEntry(interval.until).value
+                val mergedHigherValue = merge(_backingMap.ceilingEntry(interval.until).value)
                 val vanValue = _backingMap.ceilingEntry(interval.from).value
 
                 val previousValue = mergeStrategy(Wrapper(mergedHigherValue))
 
                 if (mergedHigherValue != higherValue) {
-                    _backingMap[interval.to] = mergedHigherValue
+                    _backingMap[interval.until] = mergedHigherValue
                 }
                 if (vanValue != previousValue) {
                     _backingMap[interval.from] = vanValue
@@ -119,13 +119,13 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
             }
 
             is LessThan -> {
-                val totBoundValue = _backingMap.higherEntry(interval.to).value
-                val mergedTotBoundValue = merge(_backingMap.ceilingEntry(interval.to).value)
+                val totBoundValue = _backingMap.higherEntry(interval.until).value
+                val mergedTotBoundValue = merge(_backingMap.ceilingEntry(interval.until).value)
 
                 mergeStrategy(Wrapper(mergedTotBoundValue))
 
                 if (totBoundValue != mergedTotBoundValue) {
-                    _backingMap[interval.to] = mergedTotBoundValue
+                    _backingMap[interval.until] = mergedTotBoundValue
                 }
             }
 
@@ -181,11 +181,11 @@ private class TreeIntervalMap<K : Comparable<K>, V>(
         get() = _backingMap.values
 
     override fun containsKey(key: Interval<K>) =
-        _backingMap.containsKey(key.to) && _backingMap.lowerKey(key.to) == key.from
+        _backingMap.containsKey(key.until) && _backingMap.lowerKey(key.until) == key.from
 
     override fun containsValue(value: V) = _backingMap.containsValue(value)
 
-    override fun get(key: Interval<K>): V? = _backingMap[key.to].takeIf { _backingMap.lowerKey(key.to) == key.from }
+    override fun get(key: Interval<K>): V? = _backingMap[key.until].takeIf { _backingMap.lowerKey(key.until) == key.from }
 
     override fun isEmpty() = false
 

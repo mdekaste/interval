@@ -8,8 +8,8 @@ import interval.interfaces.LessThan
 private object AllImpl : All<Nothing> {
     override val after: Nothing? = null
     override val from: Nothing? = null
-    override val to: Nothing? = null
-    override val toIncluding: Nothing? = null
+    override val until: Nothing? = null
+    override val untilIncluding: Nothing? = null
 
     override fun times(other: LessThan<Nothing>) = other
     override fun times(other: AtLeast<Nothing>) = other

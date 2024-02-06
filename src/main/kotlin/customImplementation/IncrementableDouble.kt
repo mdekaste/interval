@@ -10,3 +10,5 @@ object IncrementableDouble : Intervallable<Double> {
     override val maxValue: Double = Double.MAX_VALUE
     override val minValue: Double = Double.MIN_VALUE
 }
+
+

@@ -82,8 +82,8 @@ fun exhaustiveCheckOnAllOptions(interval: Interval<LocalDate>): String {
     return when (interval) {
         is All -> "this is an 'all' interval"
         is AtLeast -> "this is an 'atLeast' interval with from: ${interval.from}"
-        is LessThan -> "this is a 'lessThan' interval with to: ${interval.to}"
-        is Between -> "this is a 'between' interval with from: ${interval.from} and to: ${interval.to}"
+        is LessThan -> "this is a 'lessThan' interval with to: ${interval.until}"
+        is Between -> "this is a 'between' interval with from: ${interval.from} and to: ${interval.until}"
     }
 }
 
@@ -97,14 +97,14 @@ fun exhaustiveCheckLeft(interval: Interval<LocalDate>): String {
 fun exhaustiveCheckRight(interval: Interval<LocalDate>): String {
     return when (interval) {
         is Right.Open -> "this interval doesn't doesn't have a 'to' value"
-        is Right.Closed -> "but this one does: ${interval.to}"
+        is Right.Closed -> "but this one does: ${interval.until}"
     }
 }
 
 
 fun mixedCheck(interval: Interval<LocalDate>): String {
     return when (interval) {
-        is Right.Closed -> "this interval has a to: ${interval.to} but no info about from"
+        is Right.Closed -> "this interval has a to: ${interval.until} but no info about from"
         is AtLeast -> "this interval has a from: ${interval.from} but to is unknown"
         is All -> "this is the only option left"
     }
@@ -112,7 +112,7 @@ fun mixedCheck(interval: Interval<LocalDate>): String {
 
 fun mixedCheck2(interval: Interval<LocalDate>): String {
     return when (interval) {
-        is Right.Closed -> "this interval has a to: ${interval.to} but no info about from"
+        is Right.Closed -> "this interval has a to: ${interval.until} but no info about from"
         is AtLeast -> "this interval has a from: ${interval.from} but to is unknown"
         is Left.Open -> "also covered by Left.Open"
     }

@@ -2,10 +2,10 @@ package interval.interfaces
 
 sealed interface Interval<T : Comparable<T>> {
     val from: T?
-    val to: T?
+    val until: T?
 
     val after: T?
-    val toIncluding: T?
+    val untilIncluding: T?
 
     operator fun times(other: Interval<T>) = when (other) {
         is Between<T> -> times(other)

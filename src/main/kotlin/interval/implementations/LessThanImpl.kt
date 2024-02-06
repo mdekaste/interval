@@ -5,20 +5,20 @@ import interval.interfaces.*
 
 context(Incrementable<T>)
 internal class LessThanImpl<T>(
-    override val to: T,
+    override val until: T,
 ) : LessThan<T> where T : Comparable<T>, T : Any {
-    override val toIncluding: T = to.decrement()
+    override val untilIncluding: T = until.decrement()
     override val from: T? = null
     override val after: T? = null
 
     override fun times(other: LessThan<T>): LessThan<T> =
-        LessThanImpl(to = minOf(to, other.to))
+        LessThanImpl(until = minOf(until, other.until))
 
-    override fun times(other: AtLeast<T>): Between<T> = other.from until to
+    override fun times(other: AtLeast<T>): Between<T> = other.from until until
     override fun times(other: All<T>): LessThanImpl<T> = this
-    override fun times(other: Between<T>) = other.from until minOf(to, other.to)
+    override fun times(other: Between<T>) = other.from until minOf(until, other.until)
 
-    override fun toString() = "RightBoundImpl(to: $to)"
+    override fun toString() = "RightBoundImpl(to: $until)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -27,11 +27,11 @@ internal class LessThanImpl<T>(
         if (other !is AtLeastImpl<*>) {
             return false
         }
-        return to == other.to
+        return until == other.until
     }
 
     override fun hashCode(): Int {
-        return to.hashCode()
+        return until.hashCode()
     }
 }
 
