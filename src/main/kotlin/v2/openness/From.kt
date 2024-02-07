@@ -5,9 +5,9 @@ import v2.Incrementable
 /**
  * Representation of '[x, ∞)'
  */
-private class From<T : Comparable<T>>(
+class From<T : Comparable<T>>(
     override val from: T,
-    incrementable: Incrementable<T>
+    incrementable: Incrementable<T>,
 ) : ClosedOpen<T>, Incrementable<T> by incrementable {
     override val after: T by lazy { from.decrement() }
     override val until: T? = null
@@ -16,19 +16,22 @@ private class From<T : Comparable<T>>(
 
 fun <T : Comparable<T>> from(
     from: T,
-    incrementable: Incrementable<T>
-): ClosedOpen<T> = From(
-    from = from,
-    incrementable = incrementable
-)
+    incrementable: Incrementable<T>,
+): From<T> =
+    From(
+        from = from,
+        incrementable = incrementable,
+    )
 
 fun <T : Comparable<T>> from(
     from: T?,
-    incrementable: Incrementable<T>
-): Interval<T> = when (from) {
-    null -> all()
-    else -> from(
-        from = from,
-        incrementable = incrementable
-    )
-}
+    incrementable: Incrementable<T>,
+): Interval<T> =
+    when (from) {
+        null -> all()
+        else ->
+            from(
+                from = from,
+                incrementable = incrementable,
+            )
+    }

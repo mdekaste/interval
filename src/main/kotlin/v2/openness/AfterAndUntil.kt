@@ -17,65 +17,76 @@ class AfterAndUntil<T : Comparable<T>>(
 fun <T : Comparable<T>> afterUntil(
     after: T,
     until: T,
-    incrementable: Incrementable<T>
-): Closed<T> = AfterAndUntil(
-    after = after,
-    until = until,
-    incrementable = incrementable
-)
+    incrementable: Incrementable<T>,
+): AfterAndUntil<T> =
+    AfterAndUntil(
+        after = after,
+        until = until,
+        incrementable = incrementable,
+    )
 
 fun <T : Comparable<T>> afterUntil(
     after: T?,
     until: T,
-    incrementable: Incrementable<T>
-): Right.Closed<T> = when (after) {
-    null -> until(
-        until = until,
-        incrementable = incrementable
-    )
+    incrementable: Incrementable<T>,
+): Right.Closed<T> =
+    when (after) {
+        null ->
+            until(
+                until = until,
+                incrementable = incrementable,
+            )
 
-    else -> afterUntil(
-        after = after,
-        until = until,
-        incrementable = incrementable
-    )
-}
+        else ->
+            afterUntil(
+                after = after,
+                until = until,
+                incrementable = incrementable,
+            )
+    }
 
 fun <T : Comparable<T>> afterUntil(
     after: T,
     until: T?,
-    incrementable: Incrementable<T>
-): Left.Closed<T> = when (until) {
-    null -> after(
-        after = after,
-        incrementable = incrementable
-    )
+    incrementable: Incrementable<T>,
+): Left.Closed<T> =
+    when (until) {
+        null ->
+            after(
+                after = after,
+                incrementable = incrementable,
+            )
 
-    else -> afterUntil(
-        after = after,
-        until = until,
-        incrementable = incrementable
-    )
-}
+        else ->
+            afterUntil(
+                after = after,
+                until = until,
+                incrementable = incrementable,
+            )
+    }
 
 fun <T : Comparable<T>> afterUntil(
     after: T?,
     until: T?,
-    incrementable: Incrementable<T>
-): Interval<T> = when {
-    after == null -> until(
-        until = until,
-        incrementable = incrementable
-    )
+    incrementable: Incrementable<T>,
+): Interval<T> =
+    when {
+        after == null ->
+            until(
+                until = until,
+                incrementable = incrementable,
+            )
 
-    until == null -> after(
-        after = after,
-        incrementable = incrementable
-    )
+        until == null ->
+            after(
+                after = after,
+                incrementable = incrementable,
+            )
 
-    else -> afterUntil(
-        after = after,
-        until = until,
-        incrementable = incrementable
-    )
-}
+        else ->
+            afterUntil(
+                after = after,
+                until = until,
+                incrementable = incrementable,
+            )
+    }
