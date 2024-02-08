@@ -26,7 +26,7 @@ fun <T : Comparable<T>> until(
 fun <T : Comparable<T>> until(
     until: T?,
     incrementable: Incrementable<T>,
-): Interval<T> =
+): Left.Open<T> =
     when (until) {
         null -> all()
         else ->

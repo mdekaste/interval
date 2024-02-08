@@ -26,7 +26,7 @@ fun <T : Comparable<T>> after(
 fun <T : Comparable<T>> after(
     after: T?,
     incrementable: Incrementable<T>,
-): Interval<T> =
+): Right.Open<T> =
     when (after) {
         null -> all()
         else ->
