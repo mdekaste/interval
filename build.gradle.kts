@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "2.0.0-Beta3"
     application
 }
 
@@ -11,7 +11,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":")))
     testImplementation(kotlin("test"))
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
 }

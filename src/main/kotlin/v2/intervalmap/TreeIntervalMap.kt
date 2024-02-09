@@ -1,17 +1,7 @@
 package v2.intervalmap
 
-import interval.implementations.until
 import v2.Incrementable
-import v2.openness.Closed
-import v2.openness.ClosedOpen
-import v2.openness.Interval
-import v2.openness.Left
-import v2.openness.Open
-import v2.openness.OpenClosed
-import v2.openness.Right
-import v2.openness.from
-import v2.openness.fromAndUntil
-import v2.openness.until
+import v2.openness.*
 import java.util.*
 
 class TreeIntervalMap<K : Comparable<K>, V>(
@@ -178,31 +168,30 @@ class TreeIntervalMap<K : Comparable<K>, V>(
         return AbstractMap.SimpleEntry(fromAndUntil(from, until, this), value)
     }
 
-    override fun getAll(key: interval.interfaces.Interval<K>) = submapSelection(key).values
-
     override val entries: Set<Map.Entry<Interval<K>, V>>
         get() =
             buildSet {
-                _backingMap.firstEntry().let { (until, value) -> add(AbstractMap.SimpleEntry(null until until, value)) }
-                _backingMap.entries.zipWithNext { (from, _), (until, value) -> add(AbstractMap.SimpleEntry(from until until, value)) }
+                _backingMap.firstEntry().let { (until, value) -> add(AbstractMap.SimpleEntry(until(until, this@TreeIntervalMap), value)) }
+                _backingMap.entries.zipWithNext { (from, _), (until, value) ->
+                    add(AbstractMap.SimpleEntry(fromAndUntil(from, until, this@TreeIntervalMap), value))
+                }
             }
-    override val keys: Set<interval.interfaces.Interval<K>>
+    override val keys: Set<Interval<K>>
         get() =
             buildSet {
-                add(null until _backingMap.firstKey())
-                _backingMap.keys.zipWithNext { from, until -> add(from until until) }
+                add(until(_backingMap.firstKey(), this@TreeIntervalMap))
+                _backingMap.keys.zipWithNext { from, until -> add(fromAndUntil(from, until, this@TreeIntervalMap)) }
             }
     override val size: Int
         get() = _backingMap.size
     override val values: Collection<V>
         get() = _backingMap.values
 
-    override fun containsKey(key: interval.interfaces.Interval<K>) =
-        _backingMap.containsKey(key.until) && _backingMap.lowerKey(key.until) == key.from
+    override fun containsKey(key: Interval<K>) = _backingMap.containsKey(key.until) && _backingMap.lowerKey(key.until) == key.from
 
     override fun containsValue(value: V) = _backingMap.containsValue(value)
 
-    override fun get(key: interval.interfaces.Interval<K>): V? =
+    override fun get(key: Interval<K>): V? =
         _backingMap[key.until].takeIf {
             _backingMap.lowerKey(
                 key.until,
