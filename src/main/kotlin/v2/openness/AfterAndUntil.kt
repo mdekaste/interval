@@ -1,6 +1,7 @@
 package v2.openness
 
 import v2.Incrementable
+import v2.given
 
 /**
  * Representation of '(x, y)'
@@ -14,79 +15,64 @@ class AfterAndUntil<T : Comparable<T>>(
     override val untilIncluding: T by lazy { until.decrement() }
 }
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> afterUntil(
     after: T,
     until: T,
-    incrementable: Incrementable<T>,
 ): AfterAndUntil<T> =
     AfterAndUntil(
         after = after,
         until = until,
-        incrementable = incrementable,
+        incrementable = given(),
     )
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> afterUntil(
     after: T?,
     until: T,
-    incrementable: Incrementable<T>,
 ): Right.Closed<T> =
     when (after) {
         null ->
             until(
                 until = until,
-                incrementable = incrementable,
             )
 
         else ->
             afterUntil(
                 after = after,
                 until = until,
-                incrementable = incrementable,
             )
     }
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> afterUntil(
     after: T,
     until: T?,
-    incrementable: Incrementable<T>,
 ): Left.Closed<T> =
     when (until) {
         null ->
             after(
                 after = after,
-                incrementable = incrementable,
             )
 
         else ->
             afterUntil(
                 after = after,
                 until = until,
-                incrementable = incrementable,
             )
     }
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> afterUntil(
     after: T?,
     until: T?,
-    incrementable: Incrementable<T>,
 ): Interval<T> =
     when {
-        after == null ->
-            until(
-                until = until,
-                incrementable = incrementable,
-            )
-
-        until == null ->
-            after(
-                after = after,
-                incrementable = incrementable,
-            )
-
+        after == null -> until(until = until)
+        until == null -> after(after = after)
         else ->
             afterUntil(
                 after = after,
                 until = until,
-                incrementable = incrementable,
             )
     }

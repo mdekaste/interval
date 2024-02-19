@@ -11,4 +11,4 @@ object All : Open<Nothing> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T : Comparable<T>> all(): Open<T> = All as Open<T>
+fun <T : Comparable<T>> openInterval(): Open<T> = All as Open<T>

@@ -152,35 +152,39 @@ class TreeIntervalMap<K : Comparable<K>, V>(
 
     override fun firstEntry(): Map.Entry<Left.Open<K>, V> {
         val (until, value) = _backingMap.firstEntry()
-        val interval = until(until, this)
+        val interval = until(until)
         return AbstractMap.SimpleEntry(interval, value)
     }
 
     override fun lastEntry(): Map.Entry<Right.Open<K>, V> {
         val from: K? = _backingMap.lowerKey(null)
         val (_, value) = _backingMap.lastEntry()
-        return AbstractMap.SimpleEntry(from(from, this), value)
+        return AbstractMap.SimpleEntry(from(from), value)
+    }
+
+    override fun get(key: K): V {
+        TODO("Not yet implemented")
     }
 
     override fun getEntry(key: K): Map.Entry<Interval<K>, V> {
         val from: K? = _backingMap.lowerKey(key)
         val (until, value) = _backingMap.higherEntry(key)
-        return AbstractMap.SimpleEntry(fromAndUntil(from, until, this), value)
+        return AbstractMap.SimpleEntry(fromAndUntil(from, until), value)
     }
 
     override val entries: Set<Map.Entry<Interval<K>, V>>
         get() =
             buildSet {
-                _backingMap.firstEntry().let { (until, value) -> add(AbstractMap.SimpleEntry(until(until, this@TreeIntervalMap), value)) }
+                _backingMap.firstEntry().let { (until, value) -> add(AbstractMap.SimpleEntry(until(until), value)) }
                 _backingMap.entries.zipWithNext { (from, _), (until, value) ->
-                    add(AbstractMap.SimpleEntry(fromAndUntil(from, until, this@TreeIntervalMap), value))
+                    add(AbstractMap.SimpleEntry(fromAndUntil(from, until), value))
                 }
             }
     override val keys: Set<Interval<K>>
         get() =
             buildSet {
-                add(until(_backingMap.firstKey(), this@TreeIntervalMap))
-                _backingMap.keys.zipWithNext { from, until -> add(fromAndUntil(from, until, this@TreeIntervalMap)) }
+                add(until(_backingMap.firstKey()))
+                _backingMap.keys.zipWithNext { from, until -> add(fromAndUntil(from, until)) }
             }
     override val size: Int
         get() = _backingMap.size

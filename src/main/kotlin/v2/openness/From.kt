@@ -1,6 +1,7 @@
 package v2.openness
 
 import v2.Incrementable
+import v2.given
 
 /**
  * Representation of '[x, ∞)'
@@ -14,24 +15,12 @@ class From<T : Comparable<T>>(
     override val untilIncluding: T? = null
 }
 
-fun <T : Comparable<T>> from(
-    from: T,
-    incrementable: Incrementable<T>,
-): From<T> =
-    From(
-        from = from,
-        incrementable = incrementable,
-    )
+context(Incrementable<T>)
+fun <T : Comparable<T>> from(from: T): From<T> = From(from = from, incrementable = given())
 
-fun <T : Comparable<T>> from(
-    from: T?,
-    incrementable: Incrementable<T>,
-): Right.Open<T> =
+context(Incrementable<T>)
+fun <T : Comparable<T>> from(from: T?): Right.Open<T> =
     when (from) {
-        null -> all()
-        else ->
-            from(
-                from = from,
-                incrementable = incrementable,
-            )
+        null -> `openInterval()`()
+        else -> from(from = from)
     }

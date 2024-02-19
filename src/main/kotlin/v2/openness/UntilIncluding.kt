@@ -1,6 +1,7 @@
 package v2.openness
 
 import v2.Incrementable
+import v2.given
 
 /**
  * Representation of '(-∞, y]'
@@ -14,24 +15,16 @@ class UntilIncluding<T : Comparable<T>>(
     override val from: T? = null
 }
 
-fun <T : Comparable<T>> untilIncluding(
-    untilIncluding: T,
-    incrementable: Incrementable<T>,
-): UntilIncluding<T> =
+context(Incrementable<T>)
+fun <T : Comparable<T>> untilIncluding(untilIncluding: T): UntilIncluding<T> =
     UntilIncluding(
         untilIncluding = untilIncluding,
-        incrementable = incrementable,
+        incrementable = given(),
     )
 
-fun <T : Comparable<T>> untilIncluding(
-    untilIncluding: T?,
-    incrementable: Incrementable<T>,
-): Left.Open<T> =
+context(Incrementable<T>)
+fun <T : Comparable<T>> untilIncluding(untilIncluding: T?): Left.Open<T> =
     when (untilIncluding) {
-        null -> all()
-        else ->
-            untilIncluding(
-                untilIncluding,
-                incrementable,
-            )
+        null -> `openInterval()`()
+        else -> untilIncluding(untilIncluding = untilIncluding)
     }

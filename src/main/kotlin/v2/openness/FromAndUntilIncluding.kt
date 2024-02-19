@@ -1,6 +1,7 @@
 package v2.openness
 
 import v2.Incrementable
+import v2.given
 
 /**
  * Representation of '[x, y]'
@@ -14,79 +15,56 @@ class FromAndUntilIncluding<T : Comparable<T>>(
     override val until: T by lazy { untilIncluding.increment() }
 }
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> fromAndUntilIncluding(
     from: T,
     untilIncluding: T,
-    incrementable: Incrementable<T>,
 ): FromAndUntilIncluding<T> =
     FromAndUntilIncluding(
         from = from,
         untilIncluding = untilIncluding,
-        incrementable = incrementable,
+        incrementable = given(),
     )
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> fromAndUntilIncluding(
     from: T?,
     untilIncluding: T,
-    incrementable: Incrementable<T>,
 ): Right.Closed<T> =
     when (from) {
-        null ->
-            untilIncluding(
-                untilIncluding = untilIncluding,
-                incrementable = incrementable,
-            )
-
+        null -> untilIncluding(untilIncluding = untilIncluding)
         else ->
             fromAndUntilIncluding(
                 from = from,
                 untilIncluding = untilIncluding,
-                incrementable = incrementable,
             )
     }
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> fromAndUntilIncluding(
     from: T,
     untilIncluding: T?,
-    incrementable: Incrementable<T>,
 ): Left.Closed<T> =
     when (untilIncluding) {
-        null ->
-            from(
-                from = from,
-                incrementable = incrementable,
-            )
-
+        null -> from(from = from)
         else ->
             fromAndUntilIncluding(
                 from = from,
                 untilIncluding = untilIncluding,
-                incrementable = incrementable,
             )
     }
 
+context(Incrementable<T>)
 fun <T : Comparable<T>> fromAndUntilIncluding(
     from: T?,
     untilIncluding: T?,
-    incrementable: Incrementable<T>,
 ): Interval<T> =
     when {
-        from == null ->
-            untilIncluding(
-                untilIncluding = untilIncluding,
-                incrementable = incrementable,
-            )
-
-        untilIncluding == null ->
-            from(
-                from = from,
-                incrementable = incrementable,
-            )
-
+        from == null -> untilIncluding(untilIncluding = untilIncluding)
+        untilIncluding == null -> from(from = from)
         else ->
             fromAndUntilIncluding(
                 from = from,
                 untilIncluding = untilIncluding,
-                incrementable = incrementable,
             )
     }

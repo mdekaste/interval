@@ -1,6 +1,7 @@
 package v2.openness
 
 import v2.Incrementable
+import v2.given
 
 /**
  * Representation of '(x, ∞)'
@@ -14,16 +15,16 @@ class After<T : Comparable<T>> internal constructor(
     override val untilIncluding: T? = null
 }
 
-fun <T : Comparable<T>> after(
-    after: T,
-    incrementable: Incrementable<T>,
-): After<T> = After(after = after, incrementable = incrementable)
+context(Incrementable<T>)
+fun <T : Comparable<T>> after(after: T): After<T> =
+    After(
+        after = after,
+        incrementable = given(),
+    )
 
-fun <T : Comparable<T>> after(
-    after: T?,
-    incrementable: Incrementable<T>,
-): Right.Open<T> =
+context(Incrementable<T>)
+fun <T : Comparable<T>> after(after: T?): Right.Open<T> =
     when (after) {
-        null -> all()
-        else -> after(after = after, incrementable = incrementable)
+        null -> `openInterval()`()
+        else -> after(after = after)
     }
