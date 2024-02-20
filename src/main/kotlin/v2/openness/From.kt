@@ -21,6 +21,6 @@ fun <T : Comparable<T>> from(from: T): From<T> = From(from = from, incrementable
 context(Incrementable<T>)
 fun <T : Comparable<T>> from(from: T?): Right.Open<T> =
     when (from) {
-        null -> `openInterval()`()
+        null -> openInterval()
         else -> from(from = from)
     }

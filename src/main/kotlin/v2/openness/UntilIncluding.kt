@@ -25,6 +25,6 @@ fun <T : Comparable<T>> untilIncluding(untilIncluding: T): UntilIncluding<T> =
 context(Incrementable<T>)
 fun <T : Comparable<T>> untilIncluding(untilIncluding: T?): Left.Open<T> =
     when (untilIncluding) {
-        null -> `openInterval()`()
+        null -> openInterval()
         else -> untilIncluding(untilIncluding = untilIncluding)
     }

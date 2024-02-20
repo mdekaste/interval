@@ -1,6 +1,6 @@
 package v2.openness
 
-sealed interface Interval<T> {
+sealed interface Interval<out T> {
     val from: T?
     val until: T?
 

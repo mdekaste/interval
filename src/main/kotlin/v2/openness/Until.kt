@@ -25,6 +25,6 @@ fun <T : Comparable<T>> until(until: T): Until<T> =
 context(Incrementable<T>)
 fun <T : Comparable<T>> until(until: T?): Left.Open<T> =
     when (until) {
-        null -> `openInterval()`()
+        null -> openInterval()
         else -> until(until = until)
     }
