@@ -95,7 +95,58 @@ fun <K : Comparable<K>, V> MutableIntervalMap<in K, V>.putAll(
 }
 
 context(Incrementable<K>)
-fun <K : Comparable<K>, V> intervalMapOf(
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Sequence<Pair<Interval<K>, V>>.toIntervalMap(
+    destination: M,
+): M =
+    destination.apply {
+        putAll(this@toIntervalMap)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Iterable<Pair<Interval<K>, V>>.toIntervalMap(
+    destination: M,
+): M =
+    destination.apply {
+        putAll(this@toIntervalMap)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Array<out Pair<Interval<K>, V>>.toIntervalMap(
+    destination: M,
+): M =
+    destination.apply {
+        putAll(this@toIntervalMap)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Sequence<Pair<Interval<K>, V>>.toIntervalMap(
+    destination: M,
+    onConflict: (V, V) -> V,
+): M =
+    destination.apply {
+        putAll(this@toIntervalMap, onConflict)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Iterable<Pair<Interval<K>, V>>.toIntervalMap(
+    destination: M,
+    onConflict: (V, V) -> V,
+): M =
+    destination.apply {
+        putAll(this@toIntervalMap, onConflict)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Array<out Pair<Interval<K>, V>>.toIntervalMap(
+    destination: M,
+    onConflict: (V, V) -> V,
+): M =
+    destination.apply {
+        putAll(this@toIntervalMap, onConflict)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> mutableIntervalMapOf(
     initialValue: V,
     vararg pairs: Pair<Interval<K>, V>,
 ): MutableIntervalMap<K, V> =
@@ -173,8 +224,12 @@ fun <K : Comparable<K>, V> Sequence<Pair<K, V>>.toIntervalMap(initialValue: V): 
     }
 
 context(Incrementable<K>)
-fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Sequence<Pair<K, V>>.toIntervalMap(
-    destination: M,
-): M =
-    destination.apply {
+fun <K : Comparable<K>, V> IntervalMap<K, V>.toMutableIntervalMap(
+    onConflict: (V, V) -> V,
+): MutableIntervalMap<K, V> =
+    TreeIntervalMap(
+        initialValue = firstEntry().value,
+        incrementable = given(),
+    ).apply {
+        putAll(entries.map { it.key to it.value }, onConflict)
     }

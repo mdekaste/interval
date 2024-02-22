@@ -88,6 +88,11 @@ class TreeIntervalMap<K : Comparable<K>, V>(
         val value: V,
     )
 
+    operator fun set(
+        interval: Interval<K>,
+        merge: (V) -> V,
+    ) = merge(interval, merge)
+
     override fun merge(
         interval: Interval<K>,
         merge: (V) -> V,
