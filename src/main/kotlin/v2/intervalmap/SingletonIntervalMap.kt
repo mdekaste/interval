@@ -94,31 +94,21 @@ fun <K : Comparable<K>, V> MutableIntervalMap<in K, V>.putAll(
     }
 }
 
-context(Incrementable<K>)
-fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Sequence<Pair<Interval<K>, V>>.toIntervalMap(
-    destination: M,
-): M =
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Sequence<Pair<Interval<K>, V>>.toIntervalMap(destination: M): M =
     destination.apply {
         putAll(this@toIntervalMap)
     }
 
-context(Incrementable<K>)
-fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Iterable<Pair<Interval<K>, V>>.toIntervalMap(
-    destination: M,
-): M =
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Iterable<Pair<Interval<K>, V>>.toIntervalMap(destination: M): M =
     destination.apply {
         putAll(this@toIntervalMap)
     }
 
-context(Incrementable<K>)
-fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Array<out Pair<Interval<K>, V>>.toIntervalMap(
-    destination: M,
-): M =
+fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, in V>> Array<out Pair<Interval<K>, V>>.toIntervalMap(destination: M): M =
     destination.apply {
         putAll(this@toIntervalMap)
     }
 
-context(Incrementable<K>)
 fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Sequence<Pair<Interval<K>, V>>.toIntervalMap(
     destination: M,
     onConflict: (V, V) -> V,
@@ -127,7 +117,6 @@ fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Sequence<Pair<Interv
         putAll(this@toIntervalMap, onConflict)
     }
 
-context(Incrementable<K>)
 fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Iterable<Pair<Interval<K>, V>>.toIntervalMap(
     destination: M,
     onConflict: (V, V) -> V,
@@ -136,7 +125,6 @@ fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Iterable<Pair<Interv
         putAll(this@toIntervalMap, onConflict)
     }
 
-context(Incrementable<K>)
 fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Array<out Pair<Interval<K>, V>>.toIntervalMap(
     destination: M,
     onConflict: (V, V) -> V,
@@ -144,6 +132,20 @@ fun <K : Comparable<K>, V, M : MutableIntervalMap<in K, V>> Array<out Pair<Inter
     destination.apply {
         putAll(this@toIntervalMap, onConflict)
     }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> mutableIntervalMapOf(): MutableIntervalMap<K, V?> =
+    TreeIntervalMap(
+        initialValue = null,
+        incrementable = given(),
+    )
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> mutableIntervalMapOf(initialValue: V): MutableIntervalMap<K, V> =
+    TreeIntervalMap(
+        initialValue = initialValue,
+        incrementable = given(),
+    )
 
 context(Incrementable<K>)
 fun <K : Comparable<K>, V> mutableIntervalMapOf(
@@ -229,7 +231,47 @@ fun <K : Comparable<K>, V> IntervalMap<K, V>.toMutableIntervalMap(
 ): MutableIntervalMap<K, V> =
     TreeIntervalMap(
         initialValue = firstEntry().value,
-        incrementable = given(),
+        incrementable = given<Incrementable<K>>(),
     ).apply {
         putAll(entries.map { it.key to it.value }, onConflict)
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V> Iterable<V>.associateByInterval(keySelector: (V) -> Interval<K>): IntervalMap<K, V?> =
+    TreeIntervalMap<K, V?>(
+        initialValue = null,
+        incrementable = given<Incrementable<K>>(),
+    ).apply {
+        this@associateByInterval.forEach {
+            set(keySelector(it), it)
+        }
+    }
+
+context(Incrementable<K>)
+fun <K : Comparable<K>, V, T> Iterable<T>.groupByInterval(
+    keySelector: (T) -> Interval<K>,
+    valueTransform: (T) -> V,
+    defaultValue: V,
+    onConflict: (V, V) -> V,
+): IntervalMap<K, V> =
+    TreeIntervalMap(defaultValue, given<Incrementable<K>>()).apply {
+        this@groupByInterval.forEach { value ->
+            merge(keySelector(value)) { previous ->
+                onConflict(previous, valueTransform(value))
+            }
+        }
+    }
+
+fun <K : Comparable<K>, V, T, M : MutableIntervalMap<in K, V>> Iterable<T>.groupByIntervalTo(
+    destination: M,
+    keySelector: (T) -> Interval<K>,
+    valueTransform: (T) -> V,
+    onConflict: (V, V) -> V,
+): M =
+    destination.apply {
+        this@groupByIntervalTo.forEach { value ->
+            merge(keySelector(value)) { previous ->
+                onConflict(previous, valueTransform(value))
+            }
+        }
     }

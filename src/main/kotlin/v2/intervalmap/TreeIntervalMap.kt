@@ -8,7 +8,7 @@ class TreeIntervalMap<K : Comparable<K>, V>(
     initialValue: V,
     incrementable: Incrementable<K>,
 ) : MutableIntervalMap<K, V>, Incrementable<K> by incrementable {
-    private val _backingMap =
+    private val _backingMap: TreeMap<K?, V> =
         TreeMap<K?, V>(nullsLast()).apply {
             set(null, initialValue)
         }
@@ -174,22 +174,22 @@ class TreeIntervalMap<K : Comparable<K>, V>(
     override fun getEntry(key: K): Map.Entry<Interval<K>, V> {
         val from: K? = _backingMap.lowerKey(key)
         val (until, value) = _backingMap.higherEntry(key)
-        return AbstractMap.SimpleEntry(fromAndUntil(from, until), value)
+        return AbstractMap.SimpleEntry(from until until, value)
     }
 
     override val entries: Set<Map.Entry<Interval<K>, V>>
         get() =
             buildSet {
                 _backingMap.firstEntry().let { (until, value) -> add(AbstractMap.SimpleEntry(until(until), value)) }
-                _backingMap.entries.zipWithNext { (from, _), (until, value) ->
-                    add(AbstractMap.SimpleEntry(fromAndUntil(from, until), value))
+                _backingMap.entries.zipWithNext { (from: K?, _), (until: K?, value: V) ->
+                    add(AbstractMap.SimpleEntry(from until until, value))
                 }
             }
     override val keys: Set<Interval<K>>
         get() =
             buildSet {
                 add(until(_backingMap.firstKey()))
-                _backingMap.keys.zipWithNext { from, until -> add(fromAndUntil(from, until)) }
+                _backingMap.keys.zipWithNext { from: K?, until: K? -> add(from until until) }
             }
     override val size: Int
         get() = _backingMap.size
@@ -209,5 +209,5 @@ class TreeIntervalMap<K : Comparable<K>, V>(
 
     override fun isEmpty() = false
 
-    override fun toString() = _backingMap.toString()
+    override fun toString() = entries.joinToString(prefix = "{", postfix = "}") { (key, value) -> "$key=$value" }
 }

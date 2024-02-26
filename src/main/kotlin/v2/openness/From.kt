@@ -13,6 +13,8 @@ class From<T : Comparable<T>>(
     override val after: T by lazy { from.decrement() }
     override val until: T? = null
     override val untilIncluding: T? = null
+
+    override fun toString() = "[$from, ∞)"
 }
 
 context(Incrementable<T>)
@@ -24,3 +26,6 @@ fun <T : Comparable<T>> from(from: T?): Right.Open<T> =
         null -> openInterval()
         else -> from(from = from)
     }
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T.until(none: Nothing?): From<T> = from(this)

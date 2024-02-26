@@ -13,6 +13,8 @@ class Until<T : Comparable<T>>(
     override val after: T? = null
     override val from: T? = null
     override val untilIncluding: T by lazy { until.decrement() }
+
+    override fun toString() = "(-∞, $until)"
 }
 
 context(Incrementable<T>)
@@ -28,3 +30,6 @@ fun <T : Comparable<T>> until(until: T?): Left.Open<T> =
         null -> openInterval()
         else -> until(until = until)
     }
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> Nothing?.until(until: T): Right.Closed<T> = until(until)

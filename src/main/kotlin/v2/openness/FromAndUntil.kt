@@ -13,6 +13,8 @@ class FromAndUntil<T : Comparable<T>>(
 ) : Closed<T>, Incrementable<T> by incrementable {
     override val after: T by lazy { from.decrement() }
     override val untilIncluding: T by lazy { until.decrement() }
+
+    override fun toString() = "[$from, $until)"
 }
 
 context(Incrementable<T>)
@@ -69,3 +71,15 @@ fun <T : Comparable<T>> fromAndUntil(
                 until = until,
             )
     }
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T.until(until: T): FromAndUntil<T> = fromAndUntil(this, until)
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T?.until(until: T): Right.Closed<T> = fromAndUntil(this, until)
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T.until(until: T?): Left.Closed<T> = fromAndUntil(this, until)
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T?.until(until: T?): Interval<T> = fromAndUntil(this, until)

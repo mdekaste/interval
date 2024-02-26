@@ -12,3 +12,5 @@ object All : Open<Nothing> {
 
 @Suppress("UNCHECKED_CAST")
 fun <T : Comparable<T>> openInterval(): Open<T> = All as Open<T>
+
+infix fun <T : Comparable<T>> Nothing?.until(none: Nothing?): Open<T> = openInterval()

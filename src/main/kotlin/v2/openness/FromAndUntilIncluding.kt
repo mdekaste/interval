@@ -68,3 +68,15 @@ fun <T : Comparable<T>> fromAndUntilIncluding(
                 untilIncluding = untilIncluding,
             )
     }
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T.untilIncluding(untilIncluding: T): FromAndUntilIncluding<T> = fromAndUntilIncluding(this, untilIncluding)
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T?.untilIncluding(untilIncluding: T): Right.Closed<T> = fromAndUntilIncluding(this, untilIncluding)
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T.untilIncluding(untilIncluding: T?): Left.Closed<T> = fromAndUntilIncluding(this, untilIncluding)
+
+context(Incrementable<T>)
+infix fun <T : Comparable<T>> T?.untilIncluding(untilIncluding: T?): Interval<T> = fromAndUntilIncluding(this, untilIncluding)
